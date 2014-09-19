@@ -15,7 +15,6 @@ public class PaintActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         PaletteView rootLayout = new PaletteView(this);
-		rootLayout.requestLayout();
 
         for (int splotchIndex = 0; splotchIndex < 10; splotchIndex++) {
             PaintView paintView = new PaintView(this);
@@ -26,7 +25,7 @@ public class PaintActivity extends Activity {
             paintView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ((PaintView)v).setColor(Color.RED);
+                    v.setVisibility(View.GONE);
                 }
             });
 
