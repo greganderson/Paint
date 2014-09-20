@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class PaintView extends View {
 
 	// List of all the different sets of poly lines that have been drawn
-	private ArrayList<PointF[]> mPointList = new ArrayList<PointF[]>();
+	private ArrayList<LineColorPair> mPointList = new ArrayList<LineColorPair>();
 	// Holds the current poly line data
 	private ArrayList<PointF> mPoints = new ArrayList<PointF>();
 
@@ -34,9 +34,9 @@ public class PaintView extends View {
 		float y = event.getY();
 
 		if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-			PointF[] copy = new PointF[mPoints.size()];
-			mPoints.toArray(copy);
-			mPointList.add(copy);
+			PointF[] points = new PointF[mPoints.size()];
+			mPoints.toArray(points);
+			mPointList.add(new LineColorPair(points, mColor));
 			mPoints.clear();
 		}
 		else
@@ -50,6 +50,22 @@ public class PaintView extends View {
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
 
+		if (mPointList.size() > 0) {
+			for (int i = 0; i < mPointList.size(); i++) {
+				PointF[] points = mPointList.get(i).getPoints();
+				int color = mPointList.get(i).getColor();
+				Paint polylinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+				polylinePaint.setStyle(Paint.Style.STROKE);
+				polylinePaint.setStrokeWidth(2.0f);
+				polylinePaint.setColor(color);
+				Path polylinePath = new Path();
+				polylinePath.moveTo(points[0].x, points[0].y);
+				for (PointF point : points)
+					polylinePath.lineTo(point.x, point.y);
+				canvas.drawPath(polylinePath, polylinePaint);
+			}
+		}
+
 		if (mPoints.size() > 0) {
 			Paint polylinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 			polylinePaint.setStyle(Paint.Style.STROKE);
@@ -61,20 +77,28 @@ public class PaintView extends View {
 				polylinePath.lineTo(point.x, point.y);
 			canvas.drawPath(polylinePath, polylinePaint);
 		}
+	}
 
-		if (mPointList.size() > 0) {
-			for (int i = 0; i < mPointList.size(); i++) {
-				PointF[] points = mPointList.get(i);
-				Paint polylinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-				polylinePaint.setStyle(Paint.Style.STROKE);
-				polylinePaint.setStrokeWidth(2.0f);
-				polylinePaint.setColor(mColor);
-				Path polylinePath = new Path();
-				polylinePath.moveTo(points[0].x, points[0].y);
-				for (PointF point : points)
-					polylinePath.lineTo(point.x, point.y);
-				canvas.drawPath(polylinePath, polylinePaint);
-			}
+	/**
+	 * Represents the points of a users dragging across the screen as well as
+	 * the color that they were.
+	 */
+	private class LineColorPair {
+
+		private PointF[] mPoints;
+		private int mColor;
+
+		public LineColorPair(PointF[] points, int color) {
+			mPoints = points;
+			mColor = color;
+		}
+
+		public PointF[] getPoints() {
+			return mPoints;
+		}
+
+		public int getColor() {
+			return mColor;
 		}
 	}
 }
