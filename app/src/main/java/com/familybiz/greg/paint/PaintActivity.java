@@ -9,7 +9,7 @@ import android.widget.LinearLayout;
 
 public class PaintActivity extends Activity implements PaletteView.OnColorChangedListener {
 
-	private PaintView mPaintArea;
+	private PaintAreaView mPaintArea;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,13 +18,12 @@ public class PaintActivity extends Activity implements PaletteView.OnColorChange
 		LinearLayout rootLayout = new LinearLayout(this);
 		rootLayout.setOrientation(LinearLayout.VERTICAL);
 
-		mPaintArea = new PaintView(this);
+		mPaintArea = new PaintAreaView(this);
 
         PaletteView palette = new PaletteView(this);
 		palette.setBackgroundColor(Color.DKGRAY);
 
 		palette.setOnColorChangedListener(this);
-
 
 		rootLayout.addView(mPaintArea, new LinearLayout.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT,

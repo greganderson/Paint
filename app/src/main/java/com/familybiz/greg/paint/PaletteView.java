@@ -7,10 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-public class PaletteView extends ViewGroup implements SplotchView.OnSplotchTouchListener {
+public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchListener {
 
 	@Override
-	public void onSplotchTouched(SplotchView v) {
+	public void onSplotchTouched(PaintView v) {
 		setCurrentSelectedColor(v.getColor());
 		if (mOnColorChangedListener != null)
 			mOnColorChangedListener.onColorChanged(this);
@@ -45,13 +45,13 @@ public class PaletteView extends ViewGroup implements SplotchView.OnSplotchTouch
 		super(context);
 
 		for (int splotchIndex = 0; splotchIndex < startingColors.length; splotchIndex++) {
-        	SplotchView splotchView = new SplotchView(context);
-        	splotchView.setColor(startingColors[splotchIndex]);
-        	addView(splotchView, new LinearLayout.LayoutParams(
+        	PaintView paintView = new PaintView(context);
+        	paintView.setColor(startingColors[splotchIndex]);
+        	addView(paintView, new LinearLayout.LayoutParams(
 					ViewGroup.LayoutParams.WRAP_CONTENT,
 					ViewGroup.LayoutParams.WRAP_CONTENT));
 
-			splotchView.setOnSplotchTouchListener(this);
+			paintView.setOnSplotchTouchListener(this);
 		}
 	}
 
