@@ -3,21 +3,13 @@ package com.familybiz.greg.paint;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 
-public class PaintActivity extends Activity {
+public class PaintActivity extends Activity implements PaletteView.OnColorChangedListener {
 
-	private final int[] startingColors = {
-			Color.BLACK,
-			Color.WHITE,
-			Color.RED,
-			Color.YELLOW,
-			Color.BLUE,
-			Color.GREEN
-	};
+	private PaintView mPaintArea;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,31 +18,15 @@ public class PaintActivity extends Activity {
 		LinearLayout rootLayout = new LinearLayout(this);
 		rootLayout.setOrientation(LinearLayout.VERTICAL);
 
-		PaintView paintArea = new PaintView(this);
+		mPaintArea = new PaintView(this);
 
         PaletteView palette = new PaletteView(this);
 		palette.setBackgroundColor(Color.DKGRAY);
 
-        for (int splotchIndex = 0; splotchIndex < startingColors.length; splotchIndex++) {
-            SplotchView splotchView = new SplotchView(this);
-            splotchView.setColor(startingColors[splotchIndex]);
-            palette.addView(splotchView, new LinearLayout.LayoutParams(
-					ViewGroup.LayoutParams.WRAP_CONTENT,
-					ViewGroup.LayoutParams.WRAP_CONTENT));
+		palette.setOnColorChangedListener(this);
 
-            splotchView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                }
-            });
 
-            splotchView.setOnSplotchTouchListener(new SplotchView.OnSplotchTouchListener() {
-                @Override
-                public void onSplotchTouched(SplotchView v) {
-                }
-            });
-        }
-		rootLayout.addView(paintArea, new LinearLayout.LayoutParams(
+		rootLayout.addView(mPaintArea, new LinearLayout.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT,
 				ViewGroup.LayoutParams.MATCH_PARENT,
 				1));
@@ -60,4 +36,9 @@ public class PaintActivity extends Activity {
 				1));
         setContentView(rootLayout);
     }
+
+	@Override
+	public void onColorChanged(PaletteView v) {
+		mPaintArea.setColor(v.getCurrentSelectedColor());
+	}
 }

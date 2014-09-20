@@ -1,16 +1,67 @@
 package com.familybiz.greg.paint;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
-public class PaletteView extends ViewGroup {
+public class PaletteView extends ViewGroup implements SplotchView.OnSplotchTouchListener {
 
+	@Override
+	public void onSplotchTouched(SplotchView v) {
+		setCurrentSelectedColor(v.getColor());
+		if (mOnColorChangedListener != null)
+			mOnColorChangedListener.onColorChanged(this);
+	}
+
+	public interface OnColorChangedListener {
+		public void onColorChanged(PaletteView v);
+	}
+
+	OnColorChangedListener mOnColorChangedListener = null;
+
+	public void setOnColorChangedListener(OnColorChangedListener listener) {
+		mOnColorChangedListener = listener;
+	}
+
+	public OnColorChangedListener getOnColorChangedListener() {
+		return mOnColorChangedListener;
+	}
+
+	private final int[] startingColors = {
+			Color.BLACK,
+			Color.WHITE,
+			Color.RED,
+			Color.YELLOW,
+			Color.BLUE,
+			Color.GREEN
+	};
+
+	private int mCurrentSelectedColor = startingColors[0];
 
     public PaletteView(Context context) {
-        super(context);
-    }
+		super(context);
+
+		for (int splotchIndex = 0; splotchIndex < startingColors.length; splotchIndex++) {
+        	SplotchView splotchView = new SplotchView(context);
+        	splotchView.setColor(startingColors[splotchIndex]);
+        	addView(splotchView, new LinearLayout.LayoutParams(
+					ViewGroup.LayoutParams.WRAP_CONTENT,
+					ViewGroup.LayoutParams.WRAP_CONTENT));
+
+			splotchView.setOnSplotchTouchListener(this);
+		}
+	}
+
+	private void setCurrentSelectedColor(int color) {
+		mCurrentSelectedColor = color;
+	}
+
+	public int getCurrentSelectedColor() {
+		return mCurrentSelectedColor;
+	}
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {

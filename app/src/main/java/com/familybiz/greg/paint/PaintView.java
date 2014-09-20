@@ -18,8 +18,14 @@ public class PaintView extends View {
 	// Holds the current poly line data
 	private ArrayList<PointF> mPoints = new ArrayList<PointF>();
 
+	private int mColor = Color.RED;
+
 	public PaintView(Context context) {
 		super(context);
+	}
+
+	public void setColor(int color) {
+		mColor = color;
 	}
 
 	@Override
@@ -48,7 +54,7 @@ public class PaintView extends View {
 			Paint polylinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 			polylinePaint.setStyle(Paint.Style.STROKE);
 			polylinePaint.setStrokeWidth(2.0f);
-			polylinePaint.setColor(Color.RED);
+			polylinePaint.setColor(mColor);
 			Path polylinePath = new Path();
 			polylinePath.moveTo(mPoints.get(0).x, mPoints.get(0).y);
 			for (PointF point : mPoints)
@@ -62,7 +68,7 @@ public class PaintView extends View {
 				Paint polylinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 				polylinePaint.setStyle(Paint.Style.STROKE);
 				polylinePaint.setStrokeWidth(2.0f);
-				polylinePaint.setColor(Color.RED);
+				polylinePaint.setColor(mColor);
 				Path polylinePath = new Path();
 				polylinePath.moveTo(points[0].x, points[0].y);
 				for (PointF point : points)
