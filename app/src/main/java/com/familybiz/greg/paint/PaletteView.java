@@ -11,6 +11,13 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
 
 	@Override
 	public void onSplotchTouched(PaintView v) {
+		for (int i = 0; i < getChildCount(); i++) {
+			PaintView splotch = (PaintView)getChildAt(i);
+			if (splotch.getColor() == mCurrentSelectedColor) {
+				splotch.setActive(false);
+				break;
+			}
+		}
 		setCurrentSelectedColor(v.getColor());
 		if (mOnColorChangedListener != null)
 			mOnColorChangedListener.onColorChanged(this);
@@ -39,7 +46,7 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
 			Color.GREEN
 	};
 
-	private int mCurrentSelectedColor = startingColors[0];
+	private int mCurrentSelectedColor;
 
     public PaletteView(Context context) {
 		super(context);
@@ -47,6 +54,10 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
 		for (int splotchIndex = 0; splotchIndex < startingColors.length; splotchIndex++) {
         	PaintView paintView = new PaintView(context);
         	paintView.setColor(startingColors[splotchIndex]);
+			if (splotchIndex == 0) {
+				paintView.setActive(true);
+				setCurrentSelectedColor(paintView.getColor());
+			}
         	addView(paintView, new LinearLayout.LayoutParams(
 					ViewGroup.LayoutParams.WRAP_CONTENT,
 					ViewGroup.LayoutParams.WRAP_CONTENT));

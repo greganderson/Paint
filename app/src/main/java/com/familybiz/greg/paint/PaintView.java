@@ -16,10 +16,19 @@ public class PaintView extends View {
     float mRadius;
     int mColor = Color.CYAN;
 	private Path mPath;
+	private boolean mActive = false;
 
     public interface OnSplotchTouchListener {
         public void onSplotchTouched(PaintView v);
     }
+
+	public void setOnSplotchTouchListener(OnSplotchTouchListener listener) {
+		mOnSplotchTouchListener = listener;
+	}
+
+	public OnSplotchTouchListener getOnSplotchTouchListener() {
+		return mOnSplotchTouchListener;
+	}
 
     OnSplotchTouchListener mOnSplotchTouchListener = null;
 
@@ -81,17 +90,13 @@ public class PaintView extends View {
 
     public void setColor(int mColor) {
         this.mColor = mColor;
-
         invalidate();
     }
 
-    public void setOnSplotchTouchListener(OnSplotchTouchListener listener) {
-        mOnSplotchTouchListener = listener;
-    }
-
-    public OnSplotchTouchListener getOnSplotchTouchListener() {
-        return mOnSplotchTouchListener;
-    }
+	public void setActive(boolean active) {
+		mActive = active;
+		invalidate();
+	}
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -102,9 +107,12 @@ public class PaintView extends View {
         float circleCenterY = mContentRect.centerY();
 
         float distance = (float) Math.sqrt(Math.pow(circleCenterX - x, 2) + Math.pow(circleCenterY - y, 2));
-        if (distance < mRadius)
-            if (mOnSplotchTouchListener != null)
-                mOnSplotchTouchListener.onSplotchTouched(this);
+        if (distance < mRadius) {
+			if (mOnSplotchTouchListener != null) {
+				setActive(true);
+				mOnSplotchTouchListener.onSplotchTouched(this);
+			}
+		}
 
         return super.onTouchEvent(event);
     }
@@ -119,7 +127,19 @@ public class PaintView extends View {
 		if (mPath == null)
 			initialize();
 
-        canvas.drawPath(mPath, paint);
+		if (mActive) {
+			Paint outline = new Paint(Paint.ANTI_ALIAS_FLAG);
+			outline.setColor(Color.GREEN);
+			outline.setStrokeWidth(3.0f);
+			outline.setStyle(Paint.Style.STROKE);
+
+			float cx = mContentRect.width() / 2;
+			float cy = mContentRect.height() / 2;
+			float radius = mContentRect.width() / 2 - 3.0f;
+			canvas.drawCircle(cx, cy, radius, outline);
+		}
+
+		canvas.drawPath(mPath, paint);
     }
 
     @Override
