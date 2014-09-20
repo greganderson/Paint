@@ -10,32 +10,54 @@ import android.widget.LinearLayout;
 
 public class PaintActivity extends Activity {
 
+	private final int[] startingColors = {
+			Color.BLACK,
+			Color.WHITE,
+			Color.RED,
+			Color.YELLOW,
+			Color.BLUE,
+			Color.GREEN
+	};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        PaletteView rootLayout = new PaletteView(this);
+		LinearLayout rootLayout = new LinearLayout(this);
+		rootLayout.setOrientation(LinearLayout.VERTICAL);
 
-        for (int splotchIndex = 0; splotchIndex < 10; splotchIndex++) {
-            PaintView paintView = new PaintView(this);
-            paintView.setBackgroundColor(Color.YELLOW);
-            paintView.setColor(Color.DKGRAY);
-            rootLayout.addView(paintView, new LinearLayout.LayoutParams(500, ViewGroup.LayoutParams.WRAP_CONTENT));
+		PaintView paintArea = new PaintView(this);
 
-            paintView.setOnClickListener(new View.OnClickListener() {
+        PaletteView palette = new PaletteView(this);
+		palette.setBackgroundColor(Color.DKGRAY);
+
+        for (int splotchIndex = 0; splotchIndex < startingColors.length; splotchIndex++) {
+            SplotchView splotchView = new SplotchView(this);
+            splotchView.setColor(startingColors[splotchIndex]);
+            palette.addView(splotchView, new LinearLayout.LayoutParams(
+					ViewGroup.LayoutParams.WRAP_CONTENT,
+					ViewGroup.LayoutParams.WRAP_CONTENT));
+
+            splotchView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    v.setVisibility(View.GONE);
                 }
             });
 
-            paintView.setOnSplotchTouchListener(new PaintView.OnSplotchTouchListener() {
+            splotchView.setOnSplotchTouchListener(new SplotchView.OnSplotchTouchListener() {
                 @Override
-                public void onSplotchTouched(PaintView v) {
-                    v.setColor(Color.DKGRAY);
+                public void onSplotchTouched(SplotchView v) {
                 }
             });
         }
+		rootLayout.addView(paintArea, new LinearLayout.LayoutParams(
+				ViewGroup.LayoutParams.MATCH_PARENT,
+				ViewGroup.LayoutParams.MATCH_PARENT,
+				1));
+		rootLayout.addView(palette, new LinearLayout.LayoutParams(
+				ViewGroup.LayoutParams.MATCH_PARENT,
+				ViewGroup.LayoutParams.MATCH_PARENT,
+				1));
         setContentView(rootLayout);
     }
 }
