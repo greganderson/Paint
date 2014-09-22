@@ -103,10 +103,11 @@ public class PaintView extends View {
 		return mActive;
 	}
 
-	private float mStartX;
-	private float mStartY;
+	private boolean mTouched;
+
 	@Override
     public boolean onTouchEvent(MotionEvent event) {
+		mTouched = false;
 		float x = event.getX();
 		float y = event.getY();
 
@@ -116,6 +117,7 @@ public class PaintView extends View {
         float distance = (float) Math.sqrt(Math.pow(circleCenterX - x, 2) + Math.pow(circleCenterY - y, 2));
         if (distance < mRadius) {
 			setActive(true);
+			mTouched = true;
 			for (PaintView v : PaletteView.mSplotches) {
 				if (v == this)
 					continue;
@@ -129,6 +131,14 @@ public class PaintView extends View {
 
 		return super.onTouchEvent(event);
     }
+
+	public boolean isTouched() {
+		return mTouched;
+	}
+
+	public void setTouched(boolean touched) {
+		mTouched = touched;
+	}
 
     @Override
     protected void onDraw(Canvas canvas) {

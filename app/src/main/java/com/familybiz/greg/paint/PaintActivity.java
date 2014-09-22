@@ -24,7 +24,7 @@ public class PaintActivity extends Activity implements PaletteView.OnColorChange
 		mPaintArea.setColor(palette.getCurrentSelectedColor());
 		palette.setBackgroundColor(Color.DKGRAY);
 
-		//palette.setOnColorChangedListener(this);
+		palette.setOnColorChangedListener(this);
 
 		rootLayout.addView(mPaintArea, new LinearLayout.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
@@ -35,6 +35,6 @@ public class PaintActivity extends Activity implements PaletteView.OnColorChange
 
 	@Override
 	public void onColorChanged(PaletteView v) {
-		//mPaintArea.setColor(v.getCurrentSelectedColor());
+		mPaintArea.setColor(v.getCurrentSelectedColor());
 	}
 }

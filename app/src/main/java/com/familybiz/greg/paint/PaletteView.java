@@ -1,5 +1,7 @@
 package com.familybiz.greg.paint;
 
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -19,13 +21,35 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
 			mOnColorChangedListener.onColorChanged(this);
 	}
 
+	private float mStartX;
+	private float mStartY;
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		for (int i = 0; i < getChildCount(); i++) {
 			PaintView v = (PaintView)getChildAt(i);
-			if (v.isActive()) {
-				v.setX(event.getX() - v.getWidth() / 2);
-				v.setY(event.getY() - v.getHeight() / 2);
+			if (v.isActive() && v.isTouched()) {
+				switch (event.getActionMasked()) {
+					case MotionEvent.ACTION_DOWN:
+						mStartX = v.getX();
+						mStartY = v.getY();
+						break;
+					case MotionEvent.ACTION_MOVE:
+						v.setX(event.getX() - v.getWidth() / 2);
+						v.setY(event.getY() - v.getHeight() / 2);
+						break;
+					case MotionEvent.ACTION_UP:
+						v.setTouched(false);
+						ObjectAnimator animator = new ObjectAnimator();
+						animator.setDuration(200);
+						animator.setTarget(v);
+						float[] x = {v.getX(), mStartX};
+						float[] y = {v.getY(), mStartY};
+						animator.setValues(
+								PropertyValuesHolder.ofFloat("x", x),
+								PropertyValuesHolder.ofFloat("y", y));
+						animator.start();
+						break;
+				}
 				break;
 			}
 		}
