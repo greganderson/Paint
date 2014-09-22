@@ -17,6 +17,7 @@ public class PaintView extends View {
     int mColor = Color.CYAN;
 	private Path mPath;
 	private boolean mActive = false;
+	private MobilePaint mMobilePaint = null;
 
     public interface OnSplotchTouchListener {
         public void onSplotchTouched(PaintView v);
@@ -98,23 +99,35 @@ public class PaintView extends View {
 		invalidate();
 	}
 
-    @Override
+	public boolean isActive() {
+		return mActive;
+	}
+
+	private float mStartX;
+	private float mStartY;
+	@Override
     public boolean onTouchEvent(MotionEvent event) {
-        float x = event.getX();
-        float y = event.getY();
+		float x = event.getX();
+		float y = event.getY();
 
         float circleCenterX = mContentRect.centerX();
         float circleCenterY = mContentRect.centerY();
 
         float distance = (float) Math.sqrt(Math.pow(circleCenterX - x, 2) + Math.pow(circleCenterY - y, 2));
         if (distance < mRadius) {
+			setActive(true);
+			for (PaintView v : PaletteView.mSplotches) {
+				if (v == this)
+					continue;
+				v.setActive(false);
+			}
+
 			if (mOnSplotchTouchListener != null) {
-				setActive(true);
 				mOnSplotchTouchListener.onSplotchTouched(this);
 			}
 		}
 
-        return super.onTouchEvent(event);
+		return super.onTouchEvent(event);
     }
 
     @Override
@@ -182,4 +195,63 @@ public class PaintView extends View {
                              resolveSizeAndState(height, heightMeasureSpec,
                         height < getSuggestedMinimumHeight() ? MEASURED_STATE_TOO_SMALL: 0));
     }
+
+	/**
+	 * Represents the paint splotch that is being dragged around.
+	 */
+	private class MobilePaint {
+
+		private Path mPath;
+		private Paint mPaint;
+		private float mXStart;
+		private float mYStart;
+		private float mX;
+		private float mY;
+
+		public MobilePaint(Path path, Paint paint, float xStart, float yStart) {
+			mPath = path;
+			mPaint = paint;
+			mXStart = xStart;
+			mYStart = yStart;
+			mX = xStart;
+			mY = yStart;
+		}
+
+		public void changePosition(float newX, float newY) {
+			mX = newX;
+			mY = newY;
+		}
+
+		public Path getPath() {
+			return mPath;
+		}
+
+		public Paint getPaint() {
+			return mPaint;
+		}
+
+		public float getXStart() {
+			return mXStart;
+		}
+
+		public float getYStart() {
+			return mYStart;
+		}
+
+		public void setX(float x) {
+			mX = x;
+		}
+
+		public float getX() {
+			return mX;
+		}
+
+		public void setY(float y) {
+			mY = y;
+		}
+
+		public float getY() {
+			return mY;
+		}
+	}
 }

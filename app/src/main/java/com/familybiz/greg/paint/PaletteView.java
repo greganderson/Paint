@@ -3,24 +3,33 @@ package com.familybiz.greg.paint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
+import java.util.ArrayList;
 
 public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchListener {
 
 	@Override
 	public void onSplotchTouched(PaintView v) {
-		for (int i = 0; i < getChildCount(); i++) {
-			PaintView splotch = (PaintView)getChildAt(i);
-			if (splotch.getColor() == mCurrentSelectedColor) {
-				splotch.setActive(false);
-				break;
-			}
-		}
 		setCurrentSelectedColor(v.getColor());
 		if (mOnColorChangedListener != null)
 			mOnColorChangedListener.onColorChanged(this);
+	}
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		for (int i = 0; i < getChildCount(); i++) {
+			PaintView v = (PaintView)getChildAt(i);
+			if (v.isActive()) {
+				v.setX(event.getX() - v.getWidth() / 2);
+				v.setY(event.getY() - v.getHeight() / 2);
+				break;
+			}
+		}
+		return true;
 	}
 
 	public interface OnColorChangedListener {
@@ -46,10 +55,14 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
 			Color.GREEN
 	};
 
+	public static ArrayList<PaintView> mSplotches;
 	private int mCurrentSelectedColor;
+	private PaintView mRovingPaint;
 
     public PaletteView(Context context) {
 		super(context);
+
+		mSplotches = new ArrayList<PaintView>();
 
 		for (int splotchIndex = 0; splotchIndex < startingColors.length; splotchIndex++) {
         	PaintView paintView = new PaintView(context);
@@ -61,6 +74,8 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
         	addView(paintView, new LinearLayout.LayoutParams(
 					ViewGroup.LayoutParams.WRAP_CONTENT,
 					ViewGroup.LayoutParams.WRAP_CONTENT));
+
+			mSplotches.add(paintView);
 
 			paintView.setOnSplotchTouchListener(this);
 		}
