@@ -3,7 +3,6 @@ package com.familybiz.greg.paint;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -44,7 +43,7 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
 						v.setTouched(false);
 
 						// Check if the splotch was dropped off the view
-						if (v.getY() < 0) {
+						if (!inPalette(v.getX(), v.getY())) {
 							removeView(v);
 							mSplotches.remove(v);
 							invalidate();
@@ -241,8 +240,13 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
         }
     }
 
-	@Override
-	protected void dispatchDraw(Canvas canvas) {
-		super.dispatchDraw(canvas);
+	private boolean inPalette(float x, float y) {
+		double centerX = getWidth() / 2;
+		double centerY = getHeight() / 2;
+		double xTop = Math.pow(x - centerX, 2);
+		double yTop = Math.pow(y - centerY, 2);
+		double xBot = Math.pow(centerX, 2);
+		double yBot = Math.pow(centerY, 2);
+		return xTop / xBot + yTop / yBot <= 1;
 	}
 }
