@@ -3,6 +3,7 @@ package com.familybiz.greg.paint;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -45,6 +46,7 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
 						// Check if the splotch was dropped off the view
 						if (v.getY() < 0) {
 							removeView(v);
+							mSplotches.remove(v);
 							invalidate();
 							break;
 						}
@@ -57,7 +59,10 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
 							PaintView newSplotch = new PaintView(getContext());
 							int color = mixColors(splotchDroppedOn.getColor(), v.getColor());
 							newSplotch.setColor(color);
+							newSplotch.setActive(false);
+							newSplotch.setOnSplotchTouchListener(this);
 							this.addView(newSplotch);
+							mSplotches.add(newSplotch);
 							invalidate();
 							break;
 						}
@@ -235,4 +240,9 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
             child.layout(childLayout.left, childLayout.top, childLayout.right, childLayout.bottom);
         }
     }
+
+	@Override
+	protected void dispatchDraw(Canvas canvas) {
+		super.dispatchDraw(canvas);
+	}
 }
