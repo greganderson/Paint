@@ -41,6 +41,15 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
 						break;
 					case MotionEvent.ACTION_UP:
 						v.setTouched(false);
+
+						// Check if the splotch was dropped off the view
+						if (v.getY() < 0) {
+							removeView(v);
+							invalidate();
+							break;
+						}
+
+						// Add a new splotch if a mix occurred
 						PaintView splotchDroppedOn = inSplotch(v, event.getX(), event.getY());
 						if (splotchDroppedOn != null) {
 							v.setX(mStartX);
@@ -52,6 +61,8 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
 							invalidate();
 							break;
 						}
+
+						// Send splotch back where it belongs
 						ObjectAnimator animator = new ObjectAnimator();
 						animator.setDuration(200);
 						animator.setTarget(v);
