@@ -43,7 +43,7 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
 						v.setTouched(false);
 
 						// Check if the splotch was dropped off the view
-						if (!inPalette(v.getX(), v.getY())) {
+						if (!inPalette(event.getX(), event.getY())) {
 							removeView(v);
 							mSplotches.remove(v);
 							invalidate();
@@ -154,9 +154,7 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
 				paintView.setActive(true);
 				setCurrentSelectedColor(paintView.getColor());
 			}
-        	addView(paintView, new LinearLayout.LayoutParams(
-					ViewGroup.LayoutParams.WRAP_CONTENT,
-					ViewGroup.LayoutParams.WRAP_CONTENT));
+			addView(paintView, new LinearLayout.LayoutParams(600, 600));
 
 			mSplotches.add(paintView);
 			mStartingPoints.put(paintView, new PointF(0.0f, 0.0f));
@@ -184,7 +182,7 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
         int childState = 0;
         for (int childIndex = 0; childIndex < getChildCount(); childIndex++) {
             View child = getChildAt(childIndex);
-            child.measure(MeasureSpec.AT_MOST | 75, MeasureSpec.AT_MOST | 75);
+            child.measure(MeasureSpec.AT_MOST | 200, MeasureSpec.AT_MOST | 200);
             childState = combineMeasuredStates(childState, child.getMeasuredState());
         }
 
@@ -243,10 +241,10 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
 	private boolean inPalette(float x, float y) {
 		double centerX = getWidth() / 2;
 		double centerY = getHeight() / 2;
-		double xTop = Math.pow(x - centerX, 2);
-		double yTop = Math.pow(y - centerY, 2);
-		double xBot = Math.pow(centerX, 2);
-		double yBot = Math.pow(centerY, 2);
-		return xTop / xBot + yTop / yBot <= 1;
+		double topX = Math.pow(x - centerX, 2);
+		double topY = Math.pow(y - centerY, 2);
+		double rX = Math.pow(getWidth() / 2, 2);
+		double rY = Math.pow(getHeight() / 2, 2);
+		return topX / rX + topY / rY <= 1;
 	}
 }

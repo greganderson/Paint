@@ -57,7 +57,7 @@ public class PaintAreaView extends View {
 				int color = mPointList.get(i).getColor();
 				Paint polylinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 				polylinePaint.setStyle(Paint.Style.STROKE);
-				polylinePaint.setStrokeWidth(2.0f);
+				polylinePaint.setStrokeWidth(8.0f);
 				polylinePaint.setColor(color);
 				Path polylinePath = new Path();
 				polylinePath.moveTo(points[0].x, points[0].y);
@@ -71,7 +71,7 @@ public class PaintAreaView extends View {
 		if (mPoints.size() > 0) {
 			Paint polylinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 			polylinePaint.setStyle(Paint.Style.STROKE);
-			polylinePaint.setStrokeWidth(2.0f);
+			polylinePaint.setStrokeWidth(8.0f);
 			polylinePaint.setColor(mColor);
 			Path polylinePath = new Path();
 			polylinePath.moveTo(mPoints.get(0).x, mPoints.get(0).y);
