@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PointF;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchListener {
 
@@ -39,6 +41,17 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
 						break;
 					case MotionEvent.ACTION_UP:
 						v.setTouched(false);
+						PaintView splotchDroppedOn = inSplotch(v, event.getX(), event.getY());
+						if (splotchDroppedOn != null) {
+							v.setX(mStartX);
+							v.setY(mStartY);
+							PaintView newSplotch = new PaintView(getContext());
+							int color = mixColors(splotchDroppedOn.getColor(), v.getColor());
+							newSplotch.setColor(color);
+							this.addView(newSplotch);
+							invalidate();
+							break;
+						}
 						ObjectAnimator animator = new ObjectAnimator();
 						animator.setDuration(200);
 						animator.setTarget(v);
@@ -54,6 +67,36 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
 			}
 		}
 		return true;
+	}
+
+	private int mixColors(int c1, int c2) {
+		int r1 = (c1 >> 16) & 0xFF;
+		int r2 = (c2 >> 16) & 0xFF;
+		int g1 = (c1 >> 8) & 0xFF;
+		int g2 = (c2 >> 8) & 0xFF;
+		int b1 = c1 & 0xFF;
+		int b2 = c2 & 0xFF;
+
+		int nr = (r1 + r2) / 2;
+		int ng = (g1 + g2) / 2;
+		int nb = (b1 + b2) / 2;
+
+		return (0xFF << 24) | (nr << 16) | (ng << 8) | nb;
+	}
+
+	private PaintView inSplotch(PaintView v, float x, float y) {
+		for (int i = 0; i < getChildCount(); i++) {
+			PaintView child = (PaintView)getChildAt(i);
+			if (child == v)
+				continue;
+			PointF centerPoint = mStartingPoints.get(child);
+			float distance = (float) Math.sqrt(Math.pow(centerPoint.x - x, 2) + Math.pow(centerPoint.y - y, 2));
+			float radius = child.mRadius;
+			if (distance < radius)
+				return child;
+		}
+
+		return null;
 	}
 
 	public interface OnColorChangedListener {
@@ -80,13 +123,14 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
 	};
 
 	public static ArrayList<PaintView> mSplotches;
+	private HashMap<PaintView, PointF> mStartingPoints;
 	private int mCurrentSelectedColor;
-	private PaintView mRovingPaint;
 
     public PaletteView(Context context) {
 		super(context);
 
 		mSplotches = new ArrayList<PaintView>();
+		mStartingPoints = new HashMap<PaintView, PointF>();
 
 		for (int splotchIndex = 0; splotchIndex < startingColors.length; splotchIndex++) {
         	PaintView paintView = new PaintView(context);
@@ -100,6 +144,7 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
 					ViewGroup.LayoutParams.WRAP_CONTENT));
 
 			mSplotches.add(paintView);
+			mStartingPoints.put(paintView, new PointF(0.0f, 0.0f));
 
 			paintView.setOnSplotchTouchListener(this);
 		}
@@ -160,6 +205,7 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
             int childCenterY = (int)(layoutRect.centerY() + layoutRect.height() * 0.5 * Math.sin(angle));
 
             View child = getChildAt(childIndex);
+			mStartingPoints.put((PaintView)child, new PointF(childCenterX, childCenterY));
 			Rect childLayout = new Rect();
 			if (child.getVisibility() == GONE) {
 				childLayout.left = 0;
