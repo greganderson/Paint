@@ -28,6 +28,7 @@ public class PaintActivity extends Activity implements PaletteView.OnColorChange
 		mPaintArea = new PaintAreaView(this);
 
         final PaletteView palette = new PaletteView(this);
+		palette.setId(10);
 		mPaintArea.setColor(palette.getCurrentSelectedColor());
 
 		palette.setOnColorChangedListener(this);

@@ -6,6 +6,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -169,6 +171,30 @@ public class PaletteView extends ViewGroup implements PaintView.OnSplotchTouchLi
 
 	public int getCurrentSelectedColor() {
 		return mCurrentSelectedColor;
+	}
+
+	@Override
+	protected Parcelable onSaveInstanceState() {
+		Bundle instanceState = new Bundle();
+
+		instanceState.putInt("activeColor", getCurrentSelectedColor());
+		instanceState.putParcelable("superState", super.onSaveInstanceState());
+
+		return instanceState;
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Parcelable state) {
+		if (state.getClass() != Bundle.class)
+			return;
+
+		Bundle instanceState = (Bundle)state;
+
+		if (instanceState.containsKey("superState"))
+			super.onRestoreInstanceState(instanceState.getParcelable("superState"));
+
+		if (instanceState.containsKey("activeColor"))
+			setCurrentSelectedColor(instanceState.getInt("activeColor"));
 	}
 
     @Override

@@ -167,7 +167,7 @@ public class PaintView extends View {
 		canvas.drawPath(mPath, paint);
     }
 
-    @Override
+	@Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
